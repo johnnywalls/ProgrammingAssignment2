@@ -28,23 +28,26 @@ makeCacheMatrix <- function(x = matrix()) {
     
     # set: store new data matrix, and invalidate inverted matrix cache
     set <- function(y) {
+        # first, invalidate cache if the new data matrix is changed
+        if ( ! identical( x, y ) ) {
+            cachedInverse <<- NULL
+        }
         x <<- y
-        cachedInverse <<- NULL
     }
     
     # get: return stored data matrix
     get <- function() x
     
-    # setinverse: cache inverted matrix
-    setinverse <- function(inverse) cachedInverse <<- inverse
+    # setInverse: cache inverted matrix
+    setInverse <- function(inverse) cachedInverse <<- inverse
     
-    # getinverse: return cached inverted matrix
-    getinverse <- function() cachedInverse
+    # getInverse: return cached inverted matrix
+    getInverse <- function() cachedInverse
     
     cm = list(set = set,
               get = get,
-              setinverse = setinverse,
-              getinverse = getinverse)
+              setInverse = setInverse,
+              getInverse = getInverse)
     class(cm) <- 'cachematrix' # assign class name for later validation
     cm
 }
@@ -61,12 +64,12 @@ cacheSolve <- function(x, ...) {
     if (class(x) != 'cachematrix') {
         stop("input parameter is not valid. Call makeCacheMatrix first")
     }
-    inverse <- x$getinverse()
+    inverse <- x$getInverse()
     if (!is.null(inverse)) {
         message("getting cached data")
         return(inverse)
     }
     inverse <- solve( x$get(), ... )
-    x$setinverse(inverse)
+    x$setInverse(inverse)
     inverse
 }
